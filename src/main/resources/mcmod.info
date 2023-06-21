@@ -1,0 +1,11 @@
+[
+{
+  "modid": "modblacklister",
+  "name": "Mod Blacklister",
+  "description": "Blacklist mods during pre-initialization.",
+  "version": "1.0",
+  "mcversion": "1.12.2",
+  "url": "https://github.com/MatBourgon/MCModBlacklister/",
+  "authorList": ["P0rtal"]
+}
+]
