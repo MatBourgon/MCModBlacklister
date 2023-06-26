@@ -8,22 +8,45 @@ import java.util.Collections;
 import java.util.List;
 
 public class MBFile {
-    private final List<String> blacklistedModsList = new ArrayList<>();
-    private int fileNameIndex = 0;
+    protected static class ModInfo implements Comparable<ModInfo>
+    {
+        public String modid;
+        public String comment;
+        public ModInfo(String line)
+        {
+            if (line.contains("#"))
+            {
+                modid = line.substring(0, line.indexOf('#')).trim();
+                comment = line.substring(line.indexOf('#') + 1).trim();
+            }
+            else
+            {
+                modid = line.trim();
+                comment = "This mod has been blacklisted.";
+            }
+        }
 
-    @Nullable String getNextFilename()
+        @Override
+        public int compareTo(ModInfo o) {
+            return this.modid.compareTo(o.modid);
+        }
+    }
+    private final List<ModInfo> blacklistedModsList = new ArrayList<>();
+    private int listIndex = 0;
+
+    @Nullable ModInfo getNextMod()
     {
         if (!isDone())
         {
-            ++fileNameIndex;
-            return blacklistedModsList.get(fileNameIndex - 1);
+            ++listIndex;
+            return blacklistedModsList.get(listIndex - 1);
         }
         return null;
     }
 
     public boolean isDone()
     {
-        return fileNameIndex == blacklistedModsList.size();
+        return listIndex == blacklistedModsList.size();
     }
 
     public MBFile(File file) throws IOException
@@ -47,9 +70,11 @@ public class MBFile {
                 break;
             }
 
-            if (!line.startsWith("\n") && !line.startsWith("\r") && !line.startsWith("#") && !excludedList.contains(line))
+            line = line.trim();
+
+            if (!line.isEmpty() && !line.startsWith("#") && !excludedList.contains(line))
             {
-                blacklistedModsList.add(line);
+                blacklistedModsList.add(new ModInfo(line));
             }
         }
         br.close();
